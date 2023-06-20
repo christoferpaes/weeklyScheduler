@@ -49,7 +49,7 @@ class ScheduleApp:
             messagebox.showinfo("Retrieve Records", "Records retrieved successfully.")
 
     def start_from_scratch(self):
-        self.collect_department_data()
+    #this needs to edited.
 
     def collect_department_data(self):
         self.clear_widgets()
