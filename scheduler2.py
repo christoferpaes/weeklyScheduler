@@ -49,7 +49,17 @@ class ScheduleApp:
             messagebox.showinfo("Retrieve Records", "Records retrieved successfully.")
 
     def start_from_scratch(self):
-    #this needs to edited.
+        if self.department is None:
+            self.collect_department_data()
+        else:
+            response = messagebox.askyesno("Start from Scratch", "Starting from scratch will delete all existing records. Are you sure you want to continue?")
+            if response == tk.YES:
+                self.clear_widgets()
+                self.department = None
+                self.employees = []
+                self.collect_department_data()
+
+
 
     def collect_department_data(self):
         self.clear_widgets()
