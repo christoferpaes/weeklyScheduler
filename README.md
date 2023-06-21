@@ -9,4 +9,6 @@ ScheduleApp: The main application class that handles the user interface and logi
 
 The program currently allows the user to enter department details (name and budget), employee details (name, hourly pay, and open hours), and generate a schedule based on the entered data. It uses tkinter for the graphical user interface.
 
+in progress. ....
+
 </div>
