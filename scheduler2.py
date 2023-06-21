@@ -1,7 +1,7 @@
 import random
 import json
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, Toplevel
 
 
 class Employee:
@@ -75,6 +75,7 @@ class ScheduleApp:
         self.root = root
         self.departments = []
         self.current_department = None
+        self.current_screen = 0  # Track the current screen index
 
         self.root.title("Employee Scheduler")
         self.root.geometry("300x200")
@@ -82,6 +83,22 @@ class ScheduleApp:
         self.label = None
         self.department_name_label = None
         self.department_name_input = None
+        self.employee_name_label = None
+        self.employee_name_input = None
+        self.hourly_pay_label = None
+        self.hourly_pay_input = None
+        self.open_hours_label = None
+        self.open_hours_input = None
+        self.days_off_label = None
+        self.days_off_input = None
+        self.add_employee_button = None
+        self.schedule_button = None
+        self.employee_list_button = None
+        self.navigation_frame = None
+        self.back_button = None
+        self.next_button = None
+        self.budget_label = None
+        self.budget_input = None
 
         self.check_first_time()
 
@@ -162,6 +179,12 @@ class ScheduleApp:
             button = tk.Button(self.root, text=department.name, command=lambda dep=department: self.select_department(dep))
             button.pack()
 
+        self.navigation_frame = tk.Frame(self.root)
+        self.navigation_frame.pack()
+
+        self.next_button = tk.Button(self.navigation_frame, text="Next", command=self.next_screen)
+        self.next_button.pack(side=tk.RIGHT)
+
     def select_department(self, department):
         self.current_department = department
         self.show_employee_layout()
@@ -195,11 +218,19 @@ class ScheduleApp:
         self.add_employee_button = tk.Button(self.root, text="Add Employee", command=self.add_employee)
         self.add_employee_button.pack()
 
-        self.schedule_button = tk.Button(self.root, text="Generate Schedule", command=self.generate_schedule)
+        self.schedule_button = tk.Button(self.root, text="Generate Schedule", command=self.show_schedule_popup)
         self.schedule_button.pack()
 
         self.employee_list_button = tk.Button(self.root, text="Employee List", command=self.display_employee_list)
         self.employee_list_button.pack()
+
+        self.navigation_frame = tk.Frame(self.root)
+        self.navigation_frame.pack()
+
+        self.back_button = tk.Button(self.navigation_frame, text="Back", command=self.previous_screen)
+        self.back_button.pack(side=tk.LEFT)
+        self.next_button = tk.Button(self.navigation_frame, text="Next", command=self.next_screen)
+        self.next_button.pack(side=tk.RIGHT)
 
     def add_employee(self):
         name = self.employee_name_input.get()
@@ -222,7 +253,7 @@ class ScheduleApp:
         self.open_hours_input.delete(0, tk.END)
         self.days_off_input.delete(0, tk.END)
 
-    def generate_schedule(self):
+    def show_schedule_popup(self):
         num_employees = len(self.current_department.employees)
         population_size = 10
         mutation_rate = 0.01
@@ -238,11 +269,35 @@ class ScheduleApp:
 
         best_chromosome = max(population, key=lambda x: x.fitness)
 
-        messagebox.showinfo("Best Schedule", f"Best Schedule:\nFitness Score: {best_chromosome.fitness}")
+        popup = tk.Toplevel()
+        popup.title("Schedule Generation")
+        popup.geometry("300x200")
+
+        label = tk.Label(popup, text="Best Schedule")
+        label.pack()
+
+        schedule_text = f"Fitness Score: {best_chromosome.fitness}"
+        schedule_label = tk.Label(popup, text=schedule_text)
+        schedule_label.pack()
+
+        close_button = tk.Button(popup, text="Close", command=popup.destroy)
+        close_button.pack()
 
     def display_employee_list(self):
         employee_list = "\n".join([employee.name for employee in self.current_department.employees])
         messagebox.showinfo("Employee List", f"Employees in {self.current_department.name}:\n{employee_list}")
+
+    def previous_screen(self):
+        self.navigation_frame.pack_forget()
+        self.navigation_frame = None
+
+        self.show_department_layout()
+
+    def next_screen(self):
+        self.navigation_frame.pack_forget()
+        self.navigation_frame = None
+
+        self.show_employee_layout()
 
     def clear_widgets(self):
         widgets = [
@@ -262,10 +317,13 @@ class ScheduleApp:
             self.add_employee_button,
             self.schedule_button,
             self.employee_list_button,
+            self.navigation_frame,
+            self.back_button,
+            self.next_button,
         ]
 
         for widget in widgets:
-            if widget is not None:
+            if widget:
                 widget.pack_forget()
 
 
@@ -273,4 +331,5 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ScheduleApp(root)
     root.mainloop()
+
 
